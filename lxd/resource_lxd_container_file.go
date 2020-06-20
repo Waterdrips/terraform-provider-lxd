@@ -3,6 +3,7 @@ package lxd
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -144,7 +145,10 @@ func resourceLxdContainerFileRead(d *schema.ResourceData, meta interface{}) erro
 func resourceLxdContainerFileDelete(d *schema.ResourceData, meta interface{}) error {
 	p := meta.(*lxdProvider)
 	v, targetFile := newFileIDFromResourceID(d.Id())
-	remote, containerName, err := p.LXDConfig.ParseRemote(v)
+	result := strings.SplitN(v, ":", 2)
+	remote := result[0]
+	containerName := result[1]
+
 	server, err := p.GetInstanceServer(remote)
 	if err != nil {
 		return err
